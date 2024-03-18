@@ -16,10 +16,22 @@ export class AppController {
   @Get('/:formId/filteredResponses')
   async getMany(
     @Param('formId') formId: string,
-    @Param('offset') offset: number = 0,
-    @Param('limit') limit: number = 100,
+    @Query('offset') offset: number = 0,
+    @Query('limit') limit: number = 100,
+    @Query('afterDate') afterDate: string,
+    @Query('beforeDate') beforeDate: string,
+    @Query('status') status: string,
+    @Query('includeEditLink') includeEditLink: string,
+    @Query('sort') sort: string,
     @Query('filters') filters?: string,
   ): Promise<GetManyResponse> {
+    const externalFilters = {
+      afterDate,
+      beforeDate,
+      status,
+      includeEditLink,
+      sort,
+    };
     if (filters) {
       let jsonFilters = [];
       try {
@@ -29,8 +41,19 @@ export class AppController {
           "Invalid filter query: couldn't parse JSON string.",
         );
       }
-      return await this.appService.getMany(formId, offset, limit, jsonFilters);
+      return await this.appService.getMany(
+        formId,
+        externalFilters,
+        offset,
+        limit,
+        jsonFilters,
+      );
     }
-    return await this.appService.getMany(formId, offset, limit);
+    return await this.appService.getMany(
+      formId,
+      externalFilters,
+      offset,
+      limit,
+    );
   }
 }

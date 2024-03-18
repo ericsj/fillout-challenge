@@ -5,6 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { FilloutApiResponse } from './dto/FilloutApiResponse.dto';
 import { filterResponse } from './filter.util';
+import { IExternalFilters } from './Interfaces';
 
 @Injectable()
 export class AppService {
@@ -13,7 +14,7 @@ export class AppService {
     private configService: ConfigService,
   ) {}
 
-  async fetchAll(formId: string) {
+  async fetchAll(formId: string, externalFilters: IExternalFilters) {
     const api = this.configService.get<string>('API');
     const url = `${api}/forms/${formId}/submissions`;
     const rawData = (
@@ -26,6 +27,7 @@ export class AppService {
           params: {
             limit: 100,
             offset: i * 100,
+            ...externalFilters,
           },
         })
       ).data;
@@ -36,11 +38,12 @@ export class AppService {
 
   async getMany(
     formId: string,
+    externalFilters: IExternalFilters,
     offset: number,
     limit: number,
     filters?: FilterClauseType[],
   ): Promise<GetManyResponse> {
-    const responses = await this.fetchAll(formId);
+    const responses = await this.fetchAll(formId, externalFilters);
     let result = responses;
     if (filters) {
       for (const filter of filters) {
