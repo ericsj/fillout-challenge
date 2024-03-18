@@ -14,6 +14,10 @@ export class AppService {
     private configService: ConfigService,
   ) {}
 
+  delay(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
   async fetchAll(formId: string, externalFilters: IExternalFilters) {
     const api = this.configService.get<string>('API');
     const url = `${api}/forms/${formId}/submissions`;
@@ -31,6 +35,7 @@ export class AppService {
           },
         })
       ).data;
+      await this.delay(200);
       allResponses = allResponses.concat(page.responses);
     }
     return allResponses;

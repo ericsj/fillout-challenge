@@ -6,7 +6,6 @@ export const filterResponse = (
   filter: FilterClauseType,
   data: Response[],
 ): Response[] => {
-  console.log('filter', filter);
   const findQuestion = (response: Response, condition: string) => {
     const foundQuestion = response.questions.find(
       (question) => question.id === filter.id,
